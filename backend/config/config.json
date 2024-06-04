@@ -1,0 +1,14 @@
+{
+  "development": {
+    "storage": "./rs_platform_dev.sqlite",
+    "dialect": "sqlite"
+  },
+  "test": {
+    "storage": ":memory:",
+    "dialect": "sqlite"
+  },
+  "production": {
+    "storage": "./rs_platform_prod.sqlite",
+    "dialect": "sqlite"
+  }
+}
