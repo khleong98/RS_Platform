@@ -95,6 +95,7 @@ router.get('/task_detail/:taskId', async (req, res) => {
     const latestRevisionInformation = {
       name: task.name,
       status: task.TaskStatus.status,
+      createdDate: task.createdDate,
       lastUpdatedDate: lastUpdatedDate,
       description: latestRevision.description,
       startDate: latestRevision.startDate,
