@@ -68,7 +68,7 @@
             </q-card-actions>
             <q-card-section align="right" v-if="taskInformation.status === 'In Progress'">
               <div class="text-caption text-grey">
-                * Completing the task would not record the form inputs.
+                * Completing or cancelling the task would not submit the form inputs for update.
               </div>
             </q-card-section>
           </q-card>
@@ -203,7 +203,3 @@ export default {
   }
 };
 </script>
-
-<style scoped>
-/* Add your styles here */
-</style>
