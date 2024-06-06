@@ -53,6 +53,7 @@ import { onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { date } from 'quasar';
 import { taskRecord } from '../services/taskManagement';
+import { TASK_MANAGEMENT_API } from '../config/apiConfig';
 
 export default {
   name: 'TaskRecord',
@@ -83,11 +84,11 @@ export default {
     };
 
     const navigateToTaskDetail = (id) => {
-      router.push(`/task_management/task_detail/${id}`);
+      router.push(`/${TASK_MANAGEMENT_API}/task_detail/${id}`);
     };
 
     const navigateToCreateTask = () => {
-      router.push('/task_management/new_task');
+      router.push(`/${TASK_MANAGEMENT_API}/new_task`);
     };
 
     const formatDate = (dateString) => {
@@ -121,7 +122,6 @@ export default {
 
 <style scoped>
 .q-page {
-  max-width: 800px;
   margin: auto;
 }
 
