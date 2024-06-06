@@ -10,3 +10,43 @@ export const taskRecord = async () => {
     throw error;
   }
 };
+
+export const taskDetail = async (taskId) => {
+  try {
+    const response = await axios.get(`${BASE_API}/${TASK_MANAGEMENT_API}/task_detail/${taskId}`);
+    return response.data;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+};
+
+export const updateTask = async (taskId, taskUpdate) => {
+  try {
+    const response = await axios.post(`${BASE_API}/${TASK_MANAGEMENT_API}/task_detail/${taskId}/update`, taskUpdate);
+    return response.data;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+};
+
+export const completeTask = async (taskId) => {
+  try {
+    const response = await axios.post(`${BASE_API}/${TASK_MANAGEMENT_API}/task_detail/${taskId}/complete`);
+    return response.data;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+};
+
+export const cancelTask = async (taskId) => {
+  try {
+    const response = await axios.post(`${BASE_API}/${TASK_MANAGEMENT_API}/task_detail/${taskId}/cancel`);
+    return response.data;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+};
