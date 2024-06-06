@@ -23,14 +23,14 @@
       <!-- Template for the status column -->
       <template v-slot:body-cell-status="props">
         <q-td :props="props">
-          <q-badge :color="getStatusColor(props.row.status)" :label="props.row.status" />
+          <q-badge :color="colorStatus(props.row.status)" :label="props.row.status" />
         </q-td>
       </template>
       
       <!-- Template for the name column to make it clickable -->
       <template v-slot:body-cell-name="props">
         <q-td :props="props">
-          <q-btn flat @click="navigateToTaskDetail(props.row.id)">
+          <q-btn flat @click="directTaskDetail(props.row.id)">
             {{ props.row.name }}
           </q-btn>
         </q-td>
@@ -41,9 +41,9 @@
     <q-btn
       color="primary"
       class="create-task-btn"
-      @click="navigateToCreateTask"
+      @click="directNewTask"
     >
-      Create task
+      Create new task
     </q-btn>
   </q-page>
 </template>
@@ -64,7 +64,7 @@ export default {
     const router = useRouter();
     const columns = [
       { name: 'name', required: true, label: 'Task', align: 'left', field: 'name', sortable: true },
-      { name: 'createdDate', required: true, label: 'Created Date', align: 'left', field: row => formatDate(row.createdDate), sortable: true },
+      { name: 'createdDate', required: true, label: 'Created Date', align: 'left', field: row => formatPeriod(row.createdDate), sortable: true },
       { name: 'status', required: true, label: 'Status', align: 'left', field: 'status', sortable: true },
     ];
 
@@ -74,7 +74,7 @@ export default {
         tasks.value = taskData.map(task => ({
           id: task.id,
           name: task.name,
-          createdDate: formatDate(task.createdDate),
+          createdDate: formatPeriod(task.createdDate),
           status: task.status
         }));
         filteredTasks.value = tasks.value;
@@ -83,19 +83,7 @@ export default {
       }
     };
 
-    const navigateToTaskDetail = (id) => {
-      router.push(`/${TASK_MANAGEMENT_API}/task_detail/${id}`);
-    };
-
-    const navigateToCreateTask = () => {
-      router.push(`/${TASK_MANAGEMENT_API}/new_task`);
-    };
-
-    const formatDate = (dateString) => {
-      return date.formatDate(dateString, 'YYYY-MM-DD HH:mm');
-    };
-
-    const getStatusColor = (status) => {
+    const colorStatus = (status) => {
       if (status === 'In Progress') {
         return 'warning';
       } else if (status === 'Completed') {
@@ -104,6 +92,18 @@ export default {
         return 'grey';
       }
     };
+
+    const directTaskDetail = (id) => {
+      router.push(`/${TASK_MANAGEMENT_API}/task_detail/${id}`);
+    };
+
+    const directNewTask = () => {
+      router.push(`/${TASK_MANAGEMENT_API}/new_task`);
+    };
+
+    const formatPeriod = (period) => {
+      return date.formatDate(period, 'YYYY-MM-DD HH:mm');
+    };    
 
     const applyFilter = () => {
       filteredTasks.value = tasks.value.filter(task => {
@@ -115,7 +115,7 @@ export default {
       loadTasks();
     });
 
-    return { tasks, filteredTasks, columns, navigateToTaskDetail, navigateToCreateTask, getStatusColor, filter, applyFilter };
+    return { tasks, filteredTasks, columns, colorStatus, directTaskDetail, directNewTask, filter, applyFilter };
   }
 };
 </script>

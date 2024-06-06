@@ -6,9 +6,9 @@
         <q-card>
           <q-card-section>
             <div class="text-h6">{{ taskInformation.name }}</div>
-            <div :class="getStatusColorClass(taskInformation.status)">{{ taskInformation.status }}</div>
-            <div class="text-subtitle3">Created: {{ formatDate(taskInformation.createdDate) }}</div>
-            <div class="text-subtitle3">Last Updated: {{ formatDate(taskInformation.lastUpdatedDate) }}</div>
+            <div :class="colorStatus(taskInformation.status)">{{ taskInformation.status }}</div>
+            <div class="text-subtitle3">Created: {{ formatPeriod(taskInformation.createdDate) }}</div>
+            <div class="text-subtitle3">Last Updated: {{ formatPeriod(taskInformation.lastUpdatedDate) }}</div>
           </q-card-section>
         </q-card>
       </div>
@@ -55,7 +55,7 @@
                   filled
                   label="End Time"
                   type="time"
-                  :rules="[val => !!val || 'End time is required', checkEndDate]"
+                  :rules="[val => !!val || 'End time is required', verifyPeriod]"
                   :disable="taskInformation.status !== 'In Progress'"
                 />
               </div>
@@ -110,17 +110,17 @@ export default {
         endDate: '',
         endTime: ''
       },
+      columns: [
+        { name: 'revision', label: 'Revision', align: 'left', field: 'revision' },
+        { name: 'description', label: 'Description', align: 'left', field: 'description' },
+        { name: 'startDate', label: 'Start Date', align: 'left', field: row => this.formatPeriod(row.startDate) },
+        { name: 'endDate', label: 'End Date', align: 'left', field: row => this.formatPeriod(row.endDate) },
+        { name: 'createdDate', label: 'Created Date', align: 'left', field: row => this.formatPeriod(row.createdDate) }
+      ],
       pagination: {
         page: 1,
         rowsPerPage: 5
       },
-      columns: [
-        { name: 'revision', label: 'Revision', align: 'left', field: 'revision' },
-        { name: 'description', label: 'Description', align: 'left', field: 'description' },
-        { name: 'startDate', label: 'Start Date', align: 'left', field: row => this.formatDate(row.startDate) },
-        { name: 'endDate', label: 'End Date', align: 'left', field: row => this.formatDate(row.endDate) },
-        { name: 'createdDate', label: 'Created Date', align: 'left', field: row => this.formatDate(row.createdDate) }
-      ]
     };
   },
   async mounted() {
@@ -129,21 +129,23 @@ export default {
       const response = await taskDetail(taskId);
       this.taskInformation = response.taskInformation;
       this.taskRevision = response.taskRevision
+      
       // Auto-populate form fields
       this.form.description = this.taskInformation.description;
       this.form.startDate = date.formatDate(this.taskInformation.startDate, 'YYYY-MM-DD');
       this.form.startTime = date.formatDate(this.taskInformation.startDate, 'HH:mm');
       this.form.endDate = date.formatDate(this.taskInformation.endDate, 'YYYY-MM-DD');
       this.form.endTime = date.formatDate(this.taskInformation.endDate, 'HH:mm');
+      
       // Store the initial form values
       this.initialForm = { ...this.form };
     } catch (error) {
-      console.error(error);
+      console.error('Errors in retrieving task:', error);
     }
   },
   methods: {
     async updateTask() {
-      if (this.isFormUnchanged()) {
+      if (this.checkSameInformation()) {
         alert('There is no any changes.');
         return;
       }
@@ -157,24 +159,15 @@ export default {
           endDate: this.form.endDate + 'T' + this.form.endTime
         });
       } catch (error) {
-        console.error(error);
+        console.error('Errors in updating task:', error);
       }
-    },
-    isFormUnchanged() {
-      return (
-        this.form.description === this.initialForm.description &&
-        this.form.startDate === this.initialForm.startDate &&
-        this.form.startTime === this.initialForm.startTime &&
-        this.form.endDate === this.initialForm.endDate &&
-        this.form.endTime === this.initialForm.endTime
-      );
     },
     async completeTask() {
       const taskId = this.$route.params.taskId;
       try {
         await completeTask(taskId);
       } catch (error) {
-        console.error(error);
+        console.error('Errors in completing task:', error);
       }
     },
     async cancelTask() {
@@ -182,23 +175,32 @@ export default {
       try {
         await cancelTask(taskId);
       } catch (error) {
-        console.error(error);
+        console.error('Errors in cancelling task:', error);
       }
     },
-    getStatusColorClass(status) {
+    colorStatus(status) {
       return {
         'text-warning': status === 'In Progress',
         'text-primary': status === 'Completed',
         'text-grey': status === 'Cancelled'
       };
     },
-    formatDate(dateString) {
-      return date.formatDate(dateString, 'YYYY-MM-DD HH:mm');
+    formatPeriod(period) {
+      return date.formatDate(period, 'YYYY-MM-DD HH:mm');
     },
-    checkEndDate(value) {
-      const startDate = new Date(this.form.startDate + 'T' + this.form.startTime);
-      const endDate = new Date(this.form.endDate + 'T' + value);
-      return endDate > startDate || 'End period should be after start period';
+    verifyPeriod(value) {
+      const startPeriod = new Date(this.form.startDate + 'T' + this.form.startTime);
+      const endPeriod = new Date(this.form.endDate + 'T' + value);
+      return endPeriod > startPeriod || 'End period should be after start period';
+    },
+    checkSameInformation() {
+      return (
+        this.form.description === this.initialForm.description &&
+        this.form.startDate === this.initialForm.startDate &&
+        this.form.startTime === this.initialForm.startTime &&
+        this.form.endDate === this.initialForm.endDate &&
+        this.form.endTime === this.initialForm.endTime
+      );
     }
   }
 };

@@ -89,6 +89,10 @@ router.get('/task_detail/:taskId', async (req, res) => {
       }],
     });
 
+    if (!task) {
+      throw new Error('Specified task could not be found.');
+    }
+
     const latestRevision = task.TaskRevisions[task.TaskRevisions.length - 1];
 
     let lastUpdatedDate;
@@ -129,9 +133,11 @@ router.post('/task_detail/:taskId/update', async (req, res) => {
   const taskId = req.params.taskId;
   const { description, startDate, endDate } = req.body;
 
-  try {
-    const task = await Task.findByPk(taskId);
+  if (!startDate || !endDate) {
+    return res.status(400).json({ ERROR: 'Required inputs are incomplete.' });
+  }
 
+  try {
     await TaskRevision.create({
       taskId,
       description,
@@ -153,9 +159,17 @@ router.post('/task_detail/:taskId/complete', async (req, res) => {
   try {
     const task = await Task.findByPk(taskId);
 
+    if (!task) {
+      throw new Error('Specified task could not be found.');
+    }
+
     const taskStatus = await TaskStatus.findOne({
       where: { status: 'Completed' }
     });
+
+    if (!taskStatus) {
+      throw new Error('Specified status could not be found.');
+    }
 
     task.statusId = taskStatus.id;
     task.completionDate = new Date();
@@ -174,9 +188,17 @@ router.post('/task_detail/:taskId/cancel', async (req, res) => {
   try {
     const task = await Task.findByPk(taskId);
 
+    if (!task) {
+      throw new Error('Specified task could not be found.');
+    }
+
     const taskStatus = await TaskStatus.findOne({
       where: { status: 'Cancelled' }
     });
+
+    if (!taskStatus) {
+      throw new Error('Specified status could not be found.');
+    }
 
     task.statusId = taskStatus.id;
     task.cancelledDate = new Date();
