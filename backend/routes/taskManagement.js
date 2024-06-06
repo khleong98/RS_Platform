@@ -83,10 +83,19 @@ router.get('/task_detail/:taskId', async (req, res) => {
 
     const latestRevision = task.TaskRevisions[task.TaskRevisions.length - 1];
 
+    let lastUpdatedDate;
+    if (task.TaskStatus.status === "In Progress") {
+      lastUpdatedDate = latestRevision.createdDate;
+    } else if (task.TaskStatus.status === "Completed") {
+      lastUpdatedDate = task.completionDate;
+    } else if (task.TaskStatus.status === "Cancelled") {
+      lastUpdatedDate = task.cancelledDate;
+    }
+    
     const latestRevisionInformation = {
       name: task.name,
       status: task.TaskStatus.status,
-      lastUpdatedDate: latestRevision.createdDate,
+      lastUpdatedDate: lastUpdatedDate,
       description: latestRevision.description,
       startDate: latestRevision.startDate,
       endDate: latestRevision.endDate
