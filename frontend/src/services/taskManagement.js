@@ -50,3 +50,13 @@ export const cancelTask = async (taskId) => {
     throw error;
   }
 };
+
+export const newTask = async (task) => {
+  try {
+    const response = await axios.post(`${BASE_API}/${TASK_MANAGEMENT_API}/new_task`, task);
+    return response.data;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+};

@@ -40,10 +40,18 @@ router.get('/new_task', (req, res) => {
 router.post('/new_task', async (req, res) => {
   const { name, description, startDate, endDate } = req.body;
 
+  if (!name || !startDate || !endDate) {
+    return res.status(400).json({ ERROR: 'Required inputs are incomplete.' });
+  }
+
   try {
     const taskStatus = await TaskStatus.findOne({
       where: { status: 'In Progress' }
     });
+
+    if (!taskStatus) {
+      throw new Error('Specified status could not be found.');
+    }
 
     const task = await Task.create({
       name,
