@@ -9,7 +9,7 @@
               <q-input
                 v-model="form.name"
                 filled
-                label="Task (maximum 100 characters)"
+                label="Task (immutable, maximum 100 characters)"
                 maxlength="100"
                 :rules="[val => !!val || 'Task is required']"
               />

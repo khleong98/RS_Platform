@@ -22,7 +22,7 @@
                 <q-input
                   v-model="form.description"
                   filled
-                  label="Description"
+                  label="Description (optional)"
                   type="textarea"
                   :disable="taskInformation.status !== 'In Progress'"
                 />
@@ -87,6 +87,7 @@
               title="History"
               v-model:pagination="pagination"
               :rows-per-page-options="[5, 10]"
+              wrap-cells
             />
           </q-card-section>
         </q-card>
