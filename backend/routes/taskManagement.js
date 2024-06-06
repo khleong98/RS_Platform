@@ -67,7 +67,7 @@ router.post('/new_task', async (req, res) => {
       createdDate: new Date()
     });
 
-    res.redirect('/task_record');
+    res.redirect('/task_management/task_record');
   } catch (error) {
     console.error(error);
     res.status(500).json({ ERROR: error.stack });
@@ -146,7 +146,7 @@ router.post('/task_detail/:taskId/update', async (req, res) => {
       createdDate: new Date(),
     });
 
-    res.redirect('/task_record');
+    res.redirect('/task_management/task_record');
   } catch (error) {
     console.error(error);
     res.status(500).json({ ERROR: error.stack });
@@ -175,7 +175,7 @@ router.post('/task_detail/:taskId/complete', async (req, res) => {
     task.completionDate = new Date();
     await task.save();
 
-    res.redirect('/task_record');
+    res.redirect('/task_management/task_record');
   } catch (error) {
     console.error(error);
     res.status(500).json({ ERROR: error.stack });
@@ -204,7 +204,7 @@ router.post('/task_detail/:taskId/cancel', async (req, res) => {
     task.cancelledDate = new Date();
     await task.save();
 
-    res.redirect('/task_record');
+    res.redirect('/task_management/task_record');
   } catch (error) {
     console.error(error);
     res.status(500).json({ ERROR: error.stack });

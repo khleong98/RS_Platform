@@ -97,6 +97,7 @@
 <script>
 import { date } from 'quasar';
 import { cancelTask, completeTask, taskDetail, updateTask } from '../services/taskManagement';
+import { TASK_MANAGEMENT_API } from '../config/apiConfig';
 
 export default {
   data() {
@@ -158,6 +159,7 @@ export default {
           startDate: this.form.startDate + 'T' + this.form.startTime,
           endDate: this.form.endDate + 'T' + this.form.endTime
         });
+        this.$router.push(`/${TASK_MANAGEMENT_API}/task_record`);
       } catch (error) {
         console.error('Errors in updating task:', error);
       }
@@ -166,6 +168,7 @@ export default {
       const taskId = this.$route.params.taskId;
       try {
         await completeTask(taskId);
+        this.$router.push(`/${TASK_MANAGEMENT_API}/task_record`);
       } catch (error) {
         console.error('Errors in completing task:', error);
       }
@@ -174,6 +177,7 @@ export default {
       const taskId = this.$route.params.taskId;
       try {
         await cancelTask(taskId);
+        this.$router.push(`/${TASK_MANAGEMENT_API}/task_record`);
       } catch (error) {
         console.error('Errors in cancelling task:', error);
       }

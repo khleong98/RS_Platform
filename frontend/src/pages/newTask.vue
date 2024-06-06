@@ -61,6 +61,7 @@
 
 <script>
 import { newTask } from '../services/taskManagement';
+import { TASK_MANAGEMENT_API } from '../config/apiConfig';
 
 export default {
   data() {
@@ -92,6 +93,7 @@ export default {
           startDate: startPeriod,
           endDate: endPeriod
         });
+        this.$router.push(`/${TASK_MANAGEMENT_API}/task_record`);
       } catch (error) {
         console.error('Errors in creating task:', error);
       }
