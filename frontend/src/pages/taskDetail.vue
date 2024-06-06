@@ -61,10 +61,11 @@
               </div>
             </q-card-section>
 
-            <q-card-actions align="right" v-if="taskInformation.status === 'In Progress'">
-              <q-btn label="Update task" type="submit" color="primary" />
-              <q-btn label="Complete task" color="positive" @click="completeTask" />
-              <q-btn label="Cancel task" color="negative" @click="cancelTask" />
+            <q-card-actions align="right">
+              <q-btn label="Update task" type="submit" color="primary" v-if="taskInformation.status === 'In Progress'"/>
+              <q-btn label="Complete task" color="positive" @click="completeTask" v-if="taskInformation.status === 'In Progress'"/>
+              <q-btn label="Cancel task" color="negative" @click="cancelTask" v-if="taskInformation.status === 'In Progress'"/>
+              <q-btn label="Delete task" color="black" @click="verifyDeletion" />
             </q-card-actions>
             <q-card-section align="right" v-if="taskInformation.status === 'In Progress'">
               <div class="text-caption text-grey">
@@ -90,13 +91,27 @@
           </q-card-section>
         </q-card>
       </div>
+
+      <!-- Confirmation Dialog for Delete -->
+      <q-dialog v-model="dialogVisibility">
+        <q-card>
+          <q-card-section>
+            <div class="text-h6">Verify task deletion</div>
+            <div>Are you sure you want to delete this task? This action could not be undone.</div>
+          </q-card-section>
+          <q-card-actions align="right">
+            <q-btn flat label="Back" color="primary" v-close-popup />
+            <q-btn flat label="Confirm" color="negative" @click="deleteTask" />
+          </q-card-actions>
+        </q-card>
+      </q-dialog>
     </div>
   </q-page>
 </template>
 
 <script>
 import { date } from 'quasar';
-import { cancelTask, completeTask, taskDetail, updateTask } from '../services/taskManagement';
+import { cancelTask, completeTask, deleteTask, taskDetail, updateTask } from '../services/taskManagement';
 import { TASK_MANAGEMENT_API } from '../config/apiConfig';
 
 export default {
@@ -122,6 +137,7 @@ export default {
         page: 1,
         rowsPerPage: 5
       },
+      dialogVisibility: false
     };
   },
   async mounted() {
@@ -182,6 +198,17 @@ export default {
         console.error('Errors in cancelling task:', error);
       }
     },
+    async deleteTask() {
+      const taskId = this.$route.params.taskId;
+      try {
+        await deleteTask(taskId);
+      } catch (error) {
+        console.error('Errors in deleting task:', error);
+      } finally {
+        this.dialogVisibility = false;
+        this.$router.push(`/${TASK_MANAGEMENT_API}/task_record`);
+      }
+    },
     colorStatus(status) {
       return {
         'text-warning': status === 'In Progress',
@@ -196,6 +223,9 @@ export default {
       const startPeriod = new Date(this.form.startDate + 'T' + this.form.startTime);
       const endPeriod = new Date(this.form.endDate + 'T' + value);
       return endPeriod > startPeriod || 'End period should be after start period';
+    },
+    verifyDeletion() {
+      this.dialogVisibility = true;
     },
     checkSameInformation() {
       return (

@@ -211,4 +211,27 @@ router.post('/task_detail/:taskId/cancel', async (req, res) => {
   }
 });
 
+router.delete('/task_detail/:taskId/delete', async (req, res) => {
+  const taskId = req.params.taskId;
+
+  try {
+    await TaskRevision.destroy({
+      where: { taskId }
+    });
+
+    const taskDeletion = await Task.destroy({
+      where: { id: taskId }
+    });
+
+    if (taskDeletion === 0) {
+      throw new Error('Specified task could not be found.');
+    }
+
+    res.redirect('/task_management/task_record');
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ ERROR: error.stack });
+  }
+});
+
 module.exports = router;

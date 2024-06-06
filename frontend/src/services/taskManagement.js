@@ -51,6 +51,16 @@ export const cancelTask = async (taskId) => {
   }
 };
 
+export const deleteTask = async (taskId) => {
+  try {
+    const response = await axios.delete(`${BASE_API}/${TASK_MANAGEMENT_API}/task_detail/${taskId}/delete`);
+    return response.data;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+};
+
 export const newTask = async (task) => {
   try {
     const response = await axios.post(`${BASE_API}/${TASK_MANAGEMENT_API}/new_task`, task);
